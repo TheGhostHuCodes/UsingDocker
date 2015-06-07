@@ -1,8 +1,10 @@
 from flask import Flask, Response, request
 import requests
 import urllib.parse
+import redis
 
 app = Flask(__name__)
+cache = redis.StrictRedis(host='redis', port=6379, db=0)
 default_name = 'Joe Bloggs'
 
 
@@ -18,17 +20,20 @@ def mainpage():
            <input type="submit" value="submit">
            </form>
            <p>You look like a:
-           <img src="/moster/{1}"/>
+           <img src="/monster/{1}"/>
            '''.format(name, urllib.parse.quote(name))
     footer = '</body></html>'
 
     return header + body + footer
 
 
-@app.route('/moster/<name>')
+@app.route('/monster/<name>')
 def get_identicon(name):
-    r = requests.get('http://dnmonster:8080/monster/' + name + '?size=80')
-    image = r.content
+    image = cache.get(name)
+    if image is None:
+        r = requests.get('http://dnmonster:8080/monster/' + name + '?size=80')
+        image = r.content
+        cache.set(name, image)
 
     return Response(image, mimetype='image/png')
 
