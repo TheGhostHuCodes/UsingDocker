@@ -1,0 +1,15 @@
+identidock:
+  build: .
+  links:
+   - dnmonster
+   - redis
+  expose:
+   - "9090"
+  environment:
+    ENV: PROD
+
+dnmonster:
+  image: amouat/dnmonster
+
+redis:
+  image: redis
