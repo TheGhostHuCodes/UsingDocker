@@ -11,7 +11,7 @@ identidock:
    - redis
 
 dnmonster:
-  image: amouat/dnmonster
+  image: amouat/dnmonster:1.0
 
 redis:
   image: redis
